@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 var cors = require('cors')
 const app = express()
-const port = 8000
+const port = process.env.PORT || 8000;
 const mid = "seruML28171716354210";
 const mkey = "0q4WHdaceattByC!";
 app.use(cors())
@@ -159,7 +159,14 @@ app.post('/verify',(request,res)=>{
 
 				post_res.on('end', function(){
 					console.log('Response: ', response);
-					res.send(response);
+					response = JSON.parse(response);
+					if(response.body.resultInfo.resultStatus === "TXN_SUCCESS")
+					{
+						res.redirect("http://localhost:3000/#/ordered")
+					}
+					else{
+						res.redirect("http://localhost:3000/")
+					}
 				});
 			});
 
@@ -172,7 +179,7 @@ app.post('/verify',(request,res)=>{
 				
 	} else {
 		console.log("Checksum Mismatched");
-		response.send("Payment Unsuccesful")
+		res.redirect("http://localhost:3000")
 	}
 })
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
